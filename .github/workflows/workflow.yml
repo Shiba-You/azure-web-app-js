@@ -53,6 +53,11 @@ jobs:
     name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
+    - uses: azure/login@v1
+    with:
+      creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - run: |
+        az webapp list --query "[?state=='Running']"
     - uses: actions/checkout@main
     - name: Use Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v1
@@ -66,11 +71,6 @@ jobs:
         npm run build --if-present
         npm run test --if-present
       working-directory: .
-    - uses: azure/login@v1
-    with:
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - run: |
-        az webapp list --query "[?state=='Running']"
     - name: 'Deploy to Azure WebApp'
       uses: azure/webapps-deploy@v2
       with: 
